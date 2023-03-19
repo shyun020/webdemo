@@ -1,0 +1,875 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>웹 서비스 구축 후 템플릿 및 SSL 적용  </title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-opaquegray { background-color: rgba(255, 255, 255, 0.0375); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="cdad1557-5499-4ef8-97d4-678c6b636499" class="page sans"><header><h1 class="page-title">웹 서비스 구축 후 템플릿 및 SSL 적용  </h1></header><div class="page-body"><h3 id="d04c8411-369a-47a1-bfb9-c72b6033564c" class="">☝🏻 STEP ONE : 서비스 구축 [WEB]</h3><p id="83283102-52c7-4470-ae15-099278009b73" class="">
+</p><p id="15066ac1-69ce-4193-9b21-2dcccb12943e" class="">웹(Web)은 인터넷을 통해 정보를 공유하기 위한 하나의 수단이며 World Wide Web의 약어에요. 
+인터넷 상에서 문서와 같은 리소스를 공유하기 위한 정보 시스템을 의미해요.</p><p id="168b5a01-0dd2-4b3d-8259-a57a2624b0f2" class="">사용자는 웹 브라우저를 통해 웹 사이트에 접속하여 원하는 정보를 찾고, 웹 서버는 이를 요청에 따라 제공하는 역할을 해요. 이러한 구조를 통해, 인터넷을 통해 정보를 손쉽게 검색하고 공유할 수 
+있어요.</p><p id="2848263b-f116-470a-a02e-2043342b72f7" class="">
+</p><p id="7ebfa25d-30a8-4462-9a01-08c98c562544" class="">⚒️<strong> WEB 서비스 구축</strong></p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="aa5db6ae-0a99-4e16-aa66-809b694cfef6"><div style="font-size:1.5em"><span class="icon">💻</span></div><div style="width:100%">root@ubuntu:~# <code><strong>apt-get update</strong></code><strong>                          </strong>// 패키지 업데이트
+
+<strong>## 패키지 설치 ##</strong>
+root@ubuntu:~# <code><strong>apt-get install apache2 -y</strong></code><strong>     </strong>// apache2 패키지 설치
+root@ubuntu:~# <strong><code>dpkg -l | grep apache2</code></strong><strong>            </strong>// 패키지 설치 확인
+ii  apache2  2.4.29-1ubuntu4.27  amd64  Apache HTTP Server
+ii  apache2-bin  2.4.29-1ubuntu4.27  amd64 Apache HTTP Server 
+(modules and other binary files)
+ii  apache2-data  2.4.29-1ubuntu4.27  all  Apache HTTP Server (common files)
+ii  apache2-utils  2.4.29-1ubuntu4.27   amd64 Apache HTTP Server 
+(utility programs for web servers)
+
+<strong>## 방화벽(포트) 설정 ##</strong><p id="e97f3f3b-b6ad-4f33-a7aa-c7c8fca5dc00" class="">root@ubuntu:~# <strong><code>ufw allow 80/tcp</code></strong><strong>                  </strong>    // 80번 포트 오픈
+규칙이 추가되었습니다
+규칙이 추가되었습니다 (v6)
+root@ubuntu:~# <strong><code>ufw reload</code></strong><strong>                                </strong>// 방화벽 새로고침
+방화벽을 다시 읽었습니다
+root@ubuntu:~# <strong><code>ufw status</code></strong><strong>                                </strong>// 방화벽 상태 확인
+상태: 활성</p><p id="4fa4a35b-834a-4999-a68b-b243ab8d75c0" class="">목적                         동작          출발</p><hr id="b85ba471-c2a1-4abe-a46a-2bdbcf1f7ab3"/><p id="00d31443-2919-4b75-84bc-2936cdd5e22a" class="">23/tcp                       ALLOW       Anywhere
+21/tcp                       ALLOW       Anywhere
+22/tcp                       ALLOW       Anywhere
+80/tcp                       ALLOW       Anywhere
+23/tcp (v6)                ALLOW       Anywhere (v6)
+21/tcp (v6)                ALLOW       Anywhere (v6)
+22/tcp (v6)                ALLOW       Anywhere (v6)
+80/tcp (v6)                ALLOW       Anywhere (v6)</p><p id="bff06405-8002-4706-b1dc-96e627146c81" class="">
+</p><p id="284e398e-9eb1-4efe-b6ea-1db851d6d30d" class=""> <strong>## 데몬(서비스) 실행 ##</strong></p><p id="fc982f26-5032-46fb-a9ae-db0254aab092" class="">root@ubuntu:~# <code><strong>service apache2 start</strong></code><strong>              </strong>// 데몬(서비스) 실행</p><p id="9f0544fe-d39c-46d8-b59b-86ff0cb76994" class="">root@ubuntu:~# <code><strong>service apache2 status</strong></code><strong>            </strong>// 서비스 상태 확인
+● apache2.service - The Apache HTTP Server
+Loaded: loaded (/lib/systemd/system/apache2.service; enabled; vendor preset: enabled)
+Drop-In: /lib/systemd/system/apache2.service.d
+└─apache2-systemd.conf
+Active: <mark class="highlight-teal"><strong>active (running)</strong></mark> since Sun 2023-03-12 01:28:57 PST; 26min ago
+Main PID: 16313 (apache2)
+Tasks: 55 (limit: 3046)</p></div></figure><p id="4821e530-7547-49c5-b8f0-207b20137ea8" class="">
+</p><h3 id="edf6c446-b4bc-4e65-a456-bc7e6954c6c1" class="">✌🏻 STEP TWO : 웹 템플릿 적용</h3><p id="2e67e3a3-9ed8-4104-be61-c98f6a687f3f" class="">
+</p><p id="f0c3b4df-d534-4163-89a4-7ee359cbf73d" class=""><strong>Document Root</strong></p><p id="1b4c8e5e-1767-40a6-b41c-5a87c2bd0530" class="">→ Document root는 웹 서버에서 웹 페이지 파일들이 위치한 디렉터리를 의미해요. 이 디렉터리는 
+    웹 서버가 루트 디렉터리로부터 웹 페이지를 찾아갈 때 기준이 되는 시작점이에요.</p><p id="7a9c89b9-da00-4bc6-92dc-74710ab19e52" class="">    리눅스에서는 대표적으로 Apache 웹 서버의 Document root 디렉터리는 &quot;/var/www/html&quot;에요. 
+    이 디렉터리에 웹 페이지 파일들을 저장하고, Apache 서버가 이 디렉터리를 기준으로 웹 페이지를     
+    서비스해요. 따라서, Document root 디렉터리는 웹 서버에서 매우 중요한 역할을 해요.</p><p id="f087f6f9-544f-476c-90d1-843b1b3848d4" class="">    좀 더 쉽게 <mark class="highlight-teal_background">“웹 서버는 Document Root 경로의 있는 파일을 읽어온다.”</mark> 라고 생각하면 편할 것 같아   
+    요. Docoment Root가 /var/www/html/인데, /home/soohyun 디렉터리에 웹 페이지 파일들이 위치
+    하면 웹 서버는 서비스 할 수 없어요.</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="51956133-239f-4339-a50b-ecc5a40f0bfc"><div style="font-size:1.5em"><span class="icon">💻</span></div><div style="width:100%">root@ubuntu:/var/www/html# <code><strong>pwd</strong></code><strong>        </strong>//<strong> </strong>Document Root
+/var/www/html
+root@ubuntu:/var/www/html# <code><strong>ls -l</strong></code>
+합계 12
+-rw-r--r-- 1 root root 10918  3월 12 01:28 index.html  // Ubuntu Default Page Web File</div></figure><p id="dd96fe78-e756-47df-8732-0e6ad9f9c621" class="">
+</p><p id="9cd23008-b008-4d50-a82b-7ac41c9acf9c" class=""><strong>Index.html, Index.php &amp; 우선순위</strong></p><p id="9c5e06aa-a543-46de-818a-4a9430e49a2a" class="">→ Index.html과 Index.php는 둘 다 웹 페이지의 첫 페이지인 홈페이지로 자주 사용되는 파일명
+    이에요. 하지만, 둘은 서로 다른 파일 형식이에요. </p><p id="210c6e91-60b3-4495-a52b-c03744621e50" class="">    Index.html은 HTML (Hypertext Markup Language)로 작성된 정적 웹 페이지에요. HTML은 웹 
+    페이지의 내용을 구성하는 데 사용되는 언어에요. HTML 파일은 브라우저에서 직접 열 수 있고, 
+    CSS 및 JavaScript와 같은 다른 언어로 작성된 코드를 참조하여 웹 페이지를 동적으로 만들 수 
+    있어요.</p><p id="149b8015-b30d-4d17-bc6b-f463cc769dc6" class="">    반면에, Index.php는 PHP (Hypertext Preprocessor)로 작성된 동적 웹 페이지에요. PHP는 서버 측     
+    스크립트 언어로, HTML로 작성된 정적 페이지와 달리, 동적 컨텐츠를 생성하고 데이터베이스와  
+    상호 작용하는 데 사용돼요. PHP 파일은 웹 서버에서 처리되어 브라우저에게 보내지기 전에 PHP 
+    코드가 실행돼요.</p><p id="c01d6936-e8c4-4691-b813-43cdda722091" class="">    따라서, Index.html은 정적인 페이지를 작성할 때 사용되고, Index.php는 동적인 페이지를 작성할    
+    때 사용돼요.</p><p id="0974502f-e9b1-4fe5-b3e9-ebae6d6bc406" class="">    더불어 “우선순위”라는 개념도 있어요. 웹 서버에서 디렉토리 내에 Index 파일이 있다면, 일반적으
+    로 웹 브라우저는 그 파일을 자동으로 열어서 보여줘요. Index 파일의 이름은 서버 설정에서 변경
+    할 수 있어요.</p><p id="6b38bb53-7e1d-48ec-b77d-0576924743c3" class="">    Index 파일의 우선순위는 설정 파일에 의해 결정돼요. 일반적으로 Index.html이 가장 먼저 우선 
+   순위를 갖고, 그 다음으로 Index.htm, Index.php, Index.asp 등의 파일이 우선순위를 가지게 돼요. 
+   이러한 우선순위는 설정 파일에서 변경할 수 있어요.</p><p id="f4227db9-afb2-422f-b53c-a94aeda623f8" class="">
+</p><p id="7fb23c77-63a2-4de5-8878-3904f61e902b" class="">⚙️ <strong>웹 템플릿 적용</strong></p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="a3da2679-0e59-4f0f-bd0e-41e8e58ddf19"><div style="font-size:1.5em"><span class="icon">💻</span></div><div style="width:100%"><strong>## Ubuntu Default Page 파일 이름 변경 &amp; wget, zip Install ##</strong><p id="471be510-8727-444a-acee-1d9658e13bd8" class="">root@ubuntu:/var/www/html# <code><strong>pwd</strong></code>
+/var/www/html
+root@ubuntu:/var/www/html# <code><strong>ls -l</strong></code>
+합계 12
+-rw-r--r-- 1 root root 10918  3월 12 01:28 index.html
+
+root@ubuntu:/var/www/html# <code><strong>mv ./index.html dafault.page</strong></code><strong>  </strong>// 파일 이름 변경</p><p id="278acac8-f4a6-4f5a-938f-e4e74ce6e4b1" class="">→ index.html 이름으로 있으면 다른 웹 메인 파일이랑 겹치기 때문에 이름을 변경해야 해요.
+root@ubuntu:/var/www/html# <code><strong>ls -l</strong></code>
+합계 12
+-rw-r--r-- 1 root root 10918  3월 12 01:28 dafault.page</p><p id="1aff2e78-4584-415e-b998-a354f10351f0" class="">
+</p><p id="2675a574-5bfb-4f52-ae76-f3a836e07abd" class=""><strong>## wget Install ##</strong></p><p id="918d3f92-c635-40b8-87a5-14c4a276bb2d" class="">→ wget은 웹상의 파일을 다운로드하기 위한 명령어에요. 주로 리눅스와 유닉스 계열 
+    운영체제에서 사용돼요.
+→ 직접 웹상에서 zip 파일을 다운로드해 FTP를 사용해 업로드할 수 있지만, wget 명령어를 
+    이용하면 웹상의 파일을 운영체제로 편리하게 다운로드할 수 있어요.<strong>
+</strong>root@ubuntu:/var/www/html# <code><strong>apt-get install wget -y</strong></code><strong> </strong></p><p id="1456564e-81a6-4aa4-b2ca-3f6170056114" class=""><strong>
+## zip Install ##</strong></p><p id="fbd7cbff-0aa2-4553-8933-d80385525231" class="">→ zip은 파일 압축 및 해제를 위한 프로그램으로, 여러 개의 파일을 하나의 압축 파일로 
+   만들거나 압축 파일을 해제할 때 사용돼요.<strong>
+root@ubuntu:~# </strong><code><strong>apt-get install zip -y</strong></code><strong> 
+
+## Download HTML5UP ##
+HTMLL5UP</strong></p><figure id="d504ac41-c885-43e7-91b7-6ac9d639a1c0"><a href="https://html5up.net/" class="bookmark source"><div class="bookmark-info"><div class="bookmark-text"><div class="bookmark-title">HTML5 UP</div><div class="bookmark-description">Responsive HTML5 and CSS3 site templates designed by @ajlkn and released under the Creative Commons license.</div></div><div class="bookmark-href"><img src="https://html5up.net/assets/icons/favicon.ico" class="icon bookmark-icon"/>https://html5up.net/</div></div><img src="https://html5up.net/assets/icons/card.jpg" class="bookmark-image"/></a></figure><p id="5ebae923-37ad-42d6-959b-08b3322d9b91" class="">→ 원하는 템플릿의 링크 주소를 복사해주세요.</p><p id="8c2d30be-f8a4-4b99-9946-158de0ecf7e9" class="">
+</p><p id="96217b13-5af2-4b9d-87cf-aa473d09529b" class="">root@ubuntu:~# <strong><code>wget --no-check-certificate https://html5up.net/dimension/download</code></strong></p><p id="187c4d39-5a06-4fa1-b7ae-070925625ef7" class="">root@ubuntu:~# <code><strong>ls -l</strong></code>
+합계 1456
+-rw-r--r-- 1 root root 1485137  3월 12 08:18 download
+drwxr-xr-x 6 root root    4096  2월 22 21:06 snap</p><p id="f2b8a94c-d2dc-4b39-af73-37d65d32f631" class="">root@ubuntu:~# <strong><code>mv ./download ./download.zip</code></strong>                                  // 파일 이름 변경</p><p id="9060bdc9-a2bb-4ca5-825b-2223fecb385f" class="">root@ubuntu:~# <code><strong>root@ubuntu:~# mv ./download.zip /var/www/html</strong></code><strong>   </strong>// 폴더 이동</p><p id="5d6d3c30-882b-43a3-8d09-a4609f40456d" class="">root@ubuntu:/var/www/html# <strong><code>pwd</code></strong>
+/var/www/html</p><p id="489b908a-299d-44d6-ac42-a22428e630ac" class="">root@ubuntu:/var/www/html# <strong><code>ls -l</code></strong>
+합계 1464
+-rw-r--r-- 1 root root   10918  3월 12 01:28 dafault.page
+-rw-r--r-- 1 root root 1485137  3월 12 08:18 download.zip</p><p id="549dda96-1682-4456-951f-17dbed38877d" class="">root@ubuntu:/var/www/html# <strong><code>unzip download.zip</code></strong><strong>                              </strong>// 압축 해제</p><p id="86d7ab6b-9129-4ffd-a925-f73de201262b" class="">root@ubuntu:/var/www/html# <code><strong>ls -l</strong></code>
+합계 1512
+-rw-rw-r-- 1 root root   17128  3월  6  2022 LICENSE.txt
+-rw-rw-r-- 1 root root     771  3월  6  2022 README.txt
+drwxrwxr-x 6 root root    4096  3월  6  2022 assets
+-rw-r--r-- 1 root root   10918  3월 12 01:28 dafault.page
+-rw-r--r-- 1 root root 1485137  3월 12 08:18 download.zip
+drwxrwxr-x 2 root root    4096  3월  6  2022 images
+-rw-rw-r-- 1 root root   14622  3월  6  2022 index.html
+root@ubuntu:/var/www/html# <code><strong>service apache2 restart</strong></code>                  // 데몬(서비스) 재실행</p></div></figure><p id="a8679700-7386-49b1-9058-fa4a1e8cecf4" class="">
+</p><h3 id="b2331b5c-34ac-411a-ac49-4bf031eade06" class="">🤟🏻 STEP THREE : SSL 인증서 적용</h3><p id="052b1e1a-cdfc-4c19-8a08-54088ee78c4e" class="">
+</p><p id="dc83e6f8-692d-45ed-8a5d-2887987266f2" class=""><strong>SSL 인증서</strong></p><p id="aa2aa786-eda5-48a9-8447-2e639987a8d9" class="">→ SSL (Secure Sockets Layer) 인증서는 웹사이트에서 전송되는 정보를 암호화하고 인증하는 데 사용
+    되는 디지털 인증서에요. SSL 인증서는 인증기관 (CA, Certificate Authority) 에서 발급 받아 사용자
+    의 브라우저와 웹 서버 간에 암호화된 연결을 설정하게 돼요.</p><p id="3ecd0c0a-1af2-48af-a3b2-bc15b73e43e2" class="">    SSL 인증서를 사용하면 사용자와 웹 서버 간의 통신이 안전하게 암호화되므로 중요한 정보, 예를 
+    들어 개인 정보, 신용 카드 정보 등이 노출되는 것을 방지할 수 있어요. 인증서는 일정 기간마다 
+    갱신해야 하며, 갱신된 인증서는 이전 인증서를 대체하여 사용해요.</p><p id="4c980cdf-9347-41a7-8faf-a9b1d68d928f" class="">    웹사이트를 운영할 때 SSL 인증서를 적용하면 웹사이트가 안전하게 운영될 수 있으며, 브라우저에     
+    서도 해당 웹사이트가 안전하다는 것을 인증할 수 있어요. 이를 통해 사용자들의 개인정보 보호와 
+    보안성을 향상 시킬 수 있어요.</p><p id="9deef465-5930-4d83-a973-39b75bf98bb3" class="">
+</p><p id="8e614fe7-c016-40f0-8dc9-a10b4f0b0d20" class="">🔒 <strong>SSL 인증서 적용</strong></p><p id="fb36f531-5220-4cbb-94c9-450914edf748" class=""><strong>Let’s Encrypt</strong></p><p id="d5804e13-7385-4fc2-8419-c95b0390b89c" class="">→  Let&#x27;s Encrypt는 인터넷에서 SSL/TLS 인증서를 무료로 발급하고 관리할 수 있도록 하는 인증 기관(CA)입니다. Let&#x27;s Encrypt는 HTTPS를 쉽게 사용하도록 하여 보안성을 높이는 것을 목표로 하고 있습니다.</p><p id="b8277fc1-ee69-4251-80c6-0b46dbc314bd" class="">Let&#x27;s Encrypt는 무료이기 때문에 일반적으로 유료로 제공되는 인증서와는 달리, 모든 사용자가 쉽게 이용할 수 있습니다. Let&#x27;s Encrypt에서 발급한 인증서는 대부분의 웹 브라우저에서 신뢰할 수 있기 때문에, HTTPS를 사용하는 웹사이트에 대한 신뢰성을 높이는 데에 큰 역할을 합니다.</p><p id="d8e15ee9-0f2c-47cf-a5f4-b3c1084d8842" class="">또한, Let&#x27;s Encrypt는 자동화된 방식으로 인증서를 발급하고 갱신할 수 있도록 도와줍니다. 이를 통해 사용자는 인증서 관리에 대한 부담을 덜 수 있고, 보안적인 측면에서도 안정성을 높일 수 있습니다.</p><figure id="301b6b66-67e7-418b-9e5c-08d09cfb2369"><a href="https://letsencrypt.org/ko/" class="bookmark source"><div class="bookmark-info"><div class="bookmark-text"><div class="bookmark-title">Let&#x27;s Encrypt - 무료 SSL/TLS 인증서</div><div class="bookmark-description">Let&#x27;s Encrypt는 비영리 인터넷 보안 연구 그룹 (ISRG)에서 가져온 무료, 자동 및 공개 인증 기관입니다.</div></div><div class="bookmark-href"><img src="https://letsencrypt.org/favicon.ico" class="icon bookmark-icon"/>https://letsencrypt.org/ko/</div></div><img src="https://letsencrypt.org/images/LetsEncrypt-SocialShare.png" class="bookmark-image"/></a></figure><p id="612026ec-0365-4a7c-b926-06f81e63169e" class="">
+</p><ul id="e34471a2-3289-4269-8a1f-4efc6f142188" class="bulleted-list"><li style="list-style-type:disc">Letsencrypt Install &amp; Setting [ Ubuntu : 18.04 ]</li></ul><p id="ef6bd76c-8541-47e3-916b-0de080b7e375" class="">→ 제 도메인이 <a href="http://soohyun.im">soohyun.im</a> 으로 설정했기 때문에, 제 도메인 기준으로 작성했어요. 
+     soohyun.im 대신 본인 도메인을 입력해서 사용하시면 돼요.</p><p id="0877c42e-39bc-46e4-a846-fe5e1f308434" class="">     더불어 제가 멘토링을 준비하면서 가장 힘들었던 부분이에요. 트러블 슈팅 작업이 엄청 길었
+     어요. 아래 방법대로 명령어만 따라 입력해도 설정하실 수 있으실 거에요.</p><p id="4df0eeff-df03-477d-8693-6eb726a568d3" class="">     아래 방법보다 더 효율적인 SSL 인증서 적용 방법이 있을 수 있어요. 공부하셔서 최적화된 방법을 
+     사용하셔도 돼요.</p><p id="4c55ff4c-90da-4a66-ab64-1f2018be27ea" class="">📌 Package Update</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="3f0d261c-3952-4aa9-9e3b-f254d7add1a4"><div style="font-size:1.5em"><span class="icon">💻</span></div><div style="width:100%">root@soohyun:/# <code><mark class="highlight-blue"><strong>apt-get update</strong></mark></code></div></figure><p id="3f3ae0ca-4e2e-422b-b548-0e92ae955942" class="">📌 Letsencrypt Package Install</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="56dc3aa0-64bb-4d43-9736-d365d522ec27"><div style="font-size:1.5em"><span class="icon">💻</span></div><div style="width:100%">root@soohyun:/# <code><strong><mark class="highlight-blue">apt-get install letsencrypt</mark></strong></code></div></figure><p id="6ec90b30-b9df-4f27-a9da-3111ea02c90d" class="">📌 Letsencrypt Certification Issued</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="411aa852-0a2c-4802-9b5b-90c78e89e5f6"><div style="font-size:1.5em"><span class="icon">💻</span></div><div style="width:100%">root@soohyun:/# <code><strong><mark class="highlight-blue">letsencrypt certonly --webroot-path=/var/www/html -d soohyun.im </mark></strong></code><strong><mark class="highlight-blue">
+</mark></strong><p id="6608a793-92b3-4623-b500-d40103a437ed" class="">Saving debug log to /var/log/letsencrypt/letsencrypt.log</p><p id="09ab3b9e-bca5-45e8-8025-b37135bd6a5b" class="">How would you like to authenticate with the ACME CA?</p><hr id="502692d7-7174-4134-8164-4982af9ff320"/><p id="6b8f0191-ed81-4428-9ed9-a6ff486aac07" class="">1: Spin up a temporary webserver (standalone)
+2: Place files in webroot directory (webroot)</p><hr id="76a02f3c-2213-4b24-914c-9ce432ccdc2c"/><p id="3f85ee2f-7e47-4604-b631-736dbfa9f82b" class="">Select the appropriate number [1-2] then [enter] (press &#x27;c&#x27; to cancel): <code><mark class="highlight-blue"><strong>2</strong></mark></code>
+Plugins selected: Authenticator webroot, Installer None
+Enter email address (used for urgent renewal and security notices) (Enter &#x27;c&#x27; to
+cancel): <code><mark class="highlight-blue"><strong>[사용하실 Email 입력]</strong></mark></code></p><hr id="6ebf3afe-d22d-4873-979a-5dd1233d42e6"/><p id="4a8b0deb-22d8-430a-a9c0-0110bf2c08fd" class="">Please read the Terms of Service at
+https://letsencrypt.org/documents/LE-SA-v1.2-November-15-2017.pdf. You must
+agree in order to register with the ACME server at
+https://acme-v02.api.letsencrypt.org/directory</p><hr id="1e0c24e9-b462-47f5-9094-44b821872dda"/><p id="4b387a33-b58d-4709-bb14-a4a3a2f3dc5a" class="">(A)gree/(C)ancel: <code><mark class="highlight-blue"><strong>A</strong></mark></code></p><hr id="8c8c8b34-2b94-4066-8651-b4ddbedcf057"/><p id="cd3a1dd6-1209-4c6c-b0fe-0085ef1568a7" class="">Would you be willing to share your email address with the Electronic Frontier
+Foundation, a founding partner of the Let&#x27;s Encrypt project and the non-profit
+organization that develops Certbot? We&#x27;d like to send you email about our work
+encrypting the web, EFF news, campaigns, and ways to support digital freedom.</p><hr id="8e6c1a70-407e-43d8-b67a-60b57d669ebb"/><p id="ae7476ff-f440-4b5f-9ed6-81d02131d83c" class="">(Y)es/(N)o: <code><mark class="highlight-blue"><strong>Y</strong></mark></code>
+Obtaining a new certificate
+Performing the following challenges:
+http-01 challenge for soohyun.im
+Using the webroot path /var/www/html for all unmatched domains.
+Waiting for verification...
+Cleaning up challenges</p><p id="23e624f3-4809-4350-9b46-70d85a3d2cd5" class="">IMPORTANT NOTES:</p><ul id="c4030c0c-5606-4581-ac24-b2ddded74c30" class="bulleted-list"><li style="list-style-type:disc">Congratulations! Your certificate and chain have been saved at:<p id="f4fb3263-7d5a-451e-b343-a52548d1bcd2" class="">/etc/letsencrypt/live/soohyun.im/fullchain.pem
+Your key file has been saved at:
+/etc/letsencrypt/live/soohyun.im/privkey.pem
+Your cert will expire on 2022-03-18. To obtain a new or tweaked
+version of this certificate in the future, simply run certbot
+again. To non-interactively renew <em>all</em> of your certificates, run
+&quot;certbot renew&quot;</p></li></ul><ul id="df7cfd6a-3311-4f63-9fc7-58bcc279c2df" class="bulleted-list"><li style="list-style-type:disc">Your account credentials have been saved in your Certbot
+configuration directory at /etc/letsencrypt. You should make a
+secure backup of this folder now. This configuration directory will
+also contain certificates and private keys obtained by Certbot so
+making regular backups of this folder is ideal.</li></ul><ul id="033e92b0-751d-40cc-801e-037429c05261" class="bulleted-list"><li style="list-style-type:disc">If you like Certbot, please consider supporting our work by:<p id="4504bb31-f42a-4899-8385-8eaa646c2a78" class="">Donating to ISRG / Let&#x27;s Encrypt:   <a href="https://letsencrypt.org/donate">https://letsencrypt.org/donate</a>
+Donating to EFF:                             <a href="https://eff.org/donate-le">https://eff.org/donate-le</a></p></li></ul></div></figure><p id="e11a0b81-8e84-4dc6-ba2c-bebdfd336c6e" class="">📌 KEY Confirm</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="23e26851-b824-4895-9a19-cb41f0202127"><div style="font-size:1.5em"><span class="icon">💻</span></div><div style="width:100%">root@soohyun:/# <strong><code><mark class="highlight-blue">cd /etc/letsencrypt/live/soohyun.im</mark></code></strong>
+
+root@soohyun:/etc/letsencrypt/live/soohyun.im# <mark class="highlight-blue"><strong>ls</strong></mark><p id="e6f3f413-5b93-4b04-8fb3-31e6e13bf5b3" class="">README  <mark class="highlight-teal">cert.pem  chain.pem  fullchain.pem  privkey.pem</mark></p></div></figure><p id="81be1115-44b4-46e8-a4ef-6ef9d8778158" class="">📌 SSL File Setting</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="1e682295-1131-420a-b950-102247d1c2ed"><div style="font-size:1.5em"><span class="icon">💻</span></div><div style="width:100%">root@soohyun:/# <code><mark class="highlight-blue"><strong>cd /etc/apache2/sites-available/</strong></mark></code><mark class="highlight-blue"><strong>
+</strong></mark><p id="9b31c559-6f2a-4862-99cf-afeef93a4892" class="">root@soohyun:/etc/apache2/sites-available# <code><mark class="highlight-blue"><strong>ls -l</strong></mark></code>
+total 12
+-rw-r--r-- 1 root root 1332 Apr 14  2020 000-default.conf
+-rw-r--r-- 1 root root 6338 Apr 14  2020 default-ssl.conf</p><p id="2f3df59d-dd10-4b5e-b772-5e4f6c7941d0" class="">
+</p><p id="56ec9775-ab36-4e50-ad8e-a6b608c38c2f" class="">root@05d87cef2c9a:/etc/apache2/sites-available#<strong> </strong><code><mark class="highlight-blue"><strong>vi default-ssl.conf</strong></mark></code></p><p id="5f144320-55fa-4147-91fa-979e83ed7bb2" class="">&lt;IfModule mod_ssl.c&gt;
+        &lt;VirtualHost _default_:443&gt;
+                ServerAdmin webmaster@localhost
+
+                DocumentRoot /var/www/html
+                <code><mark class="highlight-blue"><strong>ServerName  soohyun.im</strong></mark></code><strong>
+               </strong><mark class="highlight-blue"><strong> </strong></mark><code><mark class="highlight-blue"><strong>ServerAlias soohyun.im</strong></mark></code>
+
+                #   Enable/Disable SSL for this virtual host.
+                <strong>SSLEngine on</strong>
+
+                #   A self-signed (snakeoil) certificate can be created by installing
+                #   the ssl-cert package. See
+                #   /usr/share/doc/apache2/README.Debian.gz for more info.
+                #   If both key and certificate are stored in the same file, only the
+                #   SSLCertificateFile directive is needed.
+                <code><mark class="highlight-blue"><strong>SSLCertificateFile    /etc/letsencrypt/live/soohyun.im/fullchain.pem</strong></mark></code><strong>
+                </strong><code><mark class="highlight-blue"><strong>SSLCertificateKeyFile /etc/letsencrypt/live/soohyun.im/privkey.pem</strong></mark></code><strong>
+
+</strong><code><mark class="highlight-blue"><strong>:wq</strong></mark></code></p></div></figure><p id="6dec8f62-d396-45f8-844c-bdbed8541d22" class="">📌 SSL File Apply</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="3f26fc47-c0e5-453e-92d6-41b62ecda9d6"><div style="font-size:1.5em"><span class="icon">💻</span></div><div style="width:100%">root@soohyun:/# <code><mark class="highlight-blue"><strong>a2ensite default-ssl.conf</strong></mark></code></div></figure><p id="5429a2d9-05d4-4e5f-9c82-1295a95cc186" class="">📌 Open SSL Install</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="d8c8d710-b1eb-4ba1-978f-19f643e761e5"><div style="font-size:1.5em"><span class="icon">💻</span></div><div style="width:100%">root@soohyun:/# <code><mark class="highlight-blue"><strong>apt-get install openssl</strong></mark></code><mark class="highlight-blue"><strong>
+
+</strong></mark>root@soohyun:/# <code><mark class="highlight-blue"><strong>a2enmod ssl</strong></mark></code></div></figure><p id="eaeb0f1f-141e-4361-9c01-efe7d285e4cf" class="">📌 Apache2 Restart</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="8143540a-5472-4fe7-acc4-9f9a0b046588"><div style="font-size:1.5em"><span class="icon">💻</span></div><div style="width:100%">root@soohyun:/# <code><mark class="highlight-blue"><strong>service apache2 restart</strong></mark></code></div></figure><p id="b3a940e2-39a0-40d3-95b3-9df8a2489dc0" class="">
+</p><ul id="1db808d5-89f4-469f-bba2-c449a43ecbd6" class="bulleted-list"><li style="list-style-type:disc">HTTP → HTTPS Redirect [ Ubuntu : 18.04 ]</li></ul><p id="21bef3dc-9259-4fa7-8889-2e104517181f" class="">📌 <strong><strong>Rewrite Module Activate</strong></strong></p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="6fef84e2-9cdd-462e-8d69-82868fb43a7f"><div style="font-size:1.5em"><span class="icon">💻</span></div><div style="width:100%"> root@soohyun:/# <code><strong><mark class="highlight-blue">a2enmod rewrite</mark></strong></code></div></figure><p id="c4e0ff43-9e0a-4239-a50f-44821c95d6a9" class="">📌 File Setting</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="77250925-a4d6-4573-ad96-8a60df737c20"><div style="font-size:1.5em"><span class="icon">💻</span></div><div style="width:100%"> root@soohyun:/# <code><mark class="highlight-blue"><strong>cd /etc/apache2/sites-available/</strong></mark></code><mark class="highlight-blue"><strong>
+
+</strong></mark>root@soohyun:/etc/apache2/sites-available# <code><mark class="highlight-blue"><strong>ls -l</strong></mark></code>
+total 12
+-rw-r--r-- 1 root root 1332 Apr 14  2020 000-default.conf
+-rw-r--r-- 1 root root 6338 Apr 14  2020 default-ssl.conf
+
+root@soohyun:/etc/apache2/sites-available# <code><mark class="highlight-blue"><strong>vi  ./000-default.conf</strong></mark></code><p id="2e66ed60-b259-46ad-b235-6701ecaf4f04" class="">
+</p><p id="e424986e-8fc9-4848-a0f6-5828eb806e51" class="">&lt;VirtualHost *:80&gt;
+    # The ServerName directive sets the request scheme, hostname and port that
+    # the server uses to identify itself. This is used when creating
+    # redirection URLs. In the context of virtual hosts, the ServerName
+    # specifies what hostname must appear in the request&#x27;s Host: header to
+    # match this virtual host. For the default virtual host (this file) this
+    # value is not decisive as it is used as a last resort host regardless.
+    # However, you must set it for any further virtual host explicitly.
+    # ServerName <a href="http://www.example.com/">www.example.com</a> 
+
+    ServerAdmin webmaster@localhost
+    DocumentRoot /var/www/html
+
+    <code><strong><mark class="highlight-blue">&lt;Directory /var/www/&gt;</mark></strong></code><strong><mark class="highlight-blue">
+        </mark></strong><code><strong><mark class="highlight-blue">Options Indexes FollowSymLinks MultiViews</mark></strong></code><strong><mark class="highlight-blue">
+        </mark></strong><code><strong><mark class="highlight-blue">AllowOverride All</mark></strong></code><strong><mark class="highlight-blue">
+        </mark></strong><code><strong><mark class="highlight-blue">Order allow,deny</mark></strong></code><strong><mark class="highlight-blue">
+        </mark></strong><code><strong><mark class="highlight-blue">allow from all</mark></strong></code><strong><mark class="highlight-blue">
+    </mark></strong><code><strong><mark class="highlight-blue">&lt;/Directory&gt;</mark></strong></code><strong><mark class="highlight-blue">
+</mark></strong></p><p id="f9fdfb30-01dd-4cc9-81e9-3bddd7991c5a" class=""><strong><mark class="highlight-blue">    </mark></strong><code><strong><mark class="highlight-blue">RewriteEngine On</mark></strong></code><strong><mark class="highlight-blue">
+    </mark></strong><code><strong><mark class="highlight-blue">RewriteCond %{HTTPS} !on</mark></strong></code><strong><mark class="highlight-blue">
+    </mark></strong><code><strong><mark class="highlight-blue">RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R,L]</mark></strong></code>
+
+    # For most configuration files from conf-available/, which are
+    # enabled or disabled at a global level, it is possible to
+    # include a line for only one particular virtual host. For example the
+    # following line enables the CGI configuration for this host only
+    # after it has been globally disabled with &quot;a2disconf&quot;.
+    #Include conf-available/serve-cgi-bin.conf</p><p id="00c33ff9-5fda-47f2-b99b-ec56f944ba68" class="">&lt;/VirtualHost&gt;</p><p id="ea563140-1f93-47f1-bcd6-52221f0e6819" class="">
+</p><p id="5d72c85a-96c2-4242-9fa8-aad3abfb1768" class=""><code><mark class="highlight-blue"><strong>:wq</strong></mark></code></p></div></figure><p id="b8b875c6-7c18-4127-bec1-fd47e1f6f3c2" class="">📌 Apache2 Restart</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="8e15aad8-8d3e-4c1e-b288-aa35121122fa"><div style="font-size:1.5em"><span class="icon">💻</span></div><div style="width:100%">root@soohyun:/# <code><mark class="highlight-blue"><strong>service apache2 restart</strong></mark></code></div></figure></div></article></body></html>
